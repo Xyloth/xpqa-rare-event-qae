@@ -129,3 +129,5 @@ because those pieces are highly design-dependent and are a major focus of Phase 
 This folder contains the Zenodo technical report PDF and figures.
 `paper/figures/` holds curated figure copies for reviewer-facing packaging.
 Zenodo DOI (v0.1.0 archive): `10.5281/zenodo.18816743` (release tag: `v0.1.0`; PDF: `paper/technical_report_v0.1.pdf`).
+Paper DOI: `10.5281/zenodo.18816815`
+Software/archive DOI (v0.1.0): `10.5281/zenodo.18816743`

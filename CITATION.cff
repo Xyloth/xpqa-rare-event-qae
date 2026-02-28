@@ -12,6 +12,10 @@ url: "https://github.com/Xyloth/xpqa-rare-event-qae"
 license: "MIT"
 version: "0.1.0"
 date-released: "2026-02-28"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.18816743"
+    description: "Software/archive DOI (GitHub release v0.1.0)"
 preferred-citation:
   type: report
   title: "Hybrid rare-event estimation for conjunction risk: benchmark results and fault-tolerant resource sketches"
@@ -19,6 +23,6 @@ preferred-citation:
     - family-names: "Dye"
       given-names: "James"
   year: 2026
-  doi: "10.5281/zenodo.18816743"
+  doi: "10.5281/zenodo.18816815"
   version: "0.1.0"
-  url: "https://github.com/Xyloth/xpqa-rare-event-qae/tree/v0.1.0/paper"
+  url: "https://zenodo.org/records/18816815"

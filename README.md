@@ -1,4 +1,5 @@
 [![DOI](https://zenodo.org/badge/1168537131.svg)](https://doi.org/10.5281/zenodo.18816742)
+Paper (Zenodo report): https://zenodo.org/records/18816815
 
 # XPRIZE Quantum Applications Benchmark Harness
 
@@ -98,6 +99,7 @@ python scripts/run_precision_sweep.py && python scripts/plot_precision_sweep.py
 
 ## Cite This Work
 
-- Version DOI: `10.5281/zenodo.18816743`
+- Paper DOI: `10.5281/zenodo.18816815`
+- Software/archive DOI: `10.5281/zenodo.18816743`
 - Technical report PDF: `paper/technical_report_v0.1.pdf`
 - Release tag: `v0.1.0`

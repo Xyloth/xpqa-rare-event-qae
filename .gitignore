@@ -30,3 +30,12 @@ Thumbs.db
 /data/
 /results/
 XPRIZE QUANTUM Codes.txt
+
+# Local admin/docs (do not publish)
+local_only_docs/
+*.pdf
+*.docx
+PROJECT_BUILD_LOG*.txt
+Space_Traffic_Growth_and_Pain_Points_Evidence_Pack*.md
+Quantum Oracle Innovations for Space Applications*.pdf
+HotCRP_Author_Guide*.pdf

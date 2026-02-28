@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/1168537131.svg)](https://doi.org/10.5281/zenodo.18816742)
+
 # XPRIZE Quantum Applications Benchmark Harness
 
 This repository is the technical support repo for an XPRIZE Quantum Applications Phase I Wild Card submission focused on rare-event conjunction-risk estimation (`Pc`) under uncertainty. It contains reproducible classical baselines (MC / IS / SPLIT), realistic stress regimes (mixtures + near-threshold boundary layers), an oracle-oriented encounter-plane model, and Phase II evidence artifacts (precision calibration + telescoping/gating + QDK resource-estimator outputs).
@@ -93,3 +95,9 @@ python scripts/run_precision_sweep.py && python scripts/plot_precision_sweep.py
 | `scripts/plot_gating_results.py` | Gating policy figures + summary markdown | `results/plots/gating_*.png`, `results/gating_summary.md`, `results/phase2_plan_evidence.md` |
 | `scripts/run_precision_sweep.py` | Quantization precision sweep with replicate MC | `results/tables/precision_sweep.csv` |
 | `scripts/plot_precision_sweep.py` | Precision error/CI plots + bit recommendation summary | `results/plots/precision_*_vs_bits.png`, `results/precision_sweep_summary.md` |
+
+## Cite This Work
+
+- Version DOI: `10.5281/zenodo.18816743`
+- Technical report PDF: `paper/technical_report_v0.1.pdf`
+- Release tag: `v0.1.0`

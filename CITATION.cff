@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "XPQA: Rare-event estimation benchmark suite and quantum resource sketches for conjunction risk"
+type: software
+authors:
+  - family-names: "Dye"
+    given-names: "James"
+    email: "founder@xyflowinnovations.com"
+    affiliation: "XYFLOW Innovations, LLC"
+repository-code: "https://github.com/Xyloth/xpqa-rare-event-qae"
+url: "https://github.com/Xyloth/xpqa-rare-event-qae"
+license: "MIT"
+version: "0.1.0"
+date-released: "2026-02-28"
+preferred-citation:
+  type: report
+  title: "Hybrid rare-event estimation for conjunction risk: benchmark results and fault-tolerant resource sketches"
+  authors:
+    - family-names: "Dye"
+      given-names: "James"
+  year: 2026
+  doi: "10.5281/zenodo.18816743"
+  version: "0.1.0"
+  url: "https://github.com/Xyloth/xpqa-rare-event-qae/tree/v0.1.0/paper"

@@ -1,0 +1,392 @@
+PROJECT_BUILD_LOG_PHASE1.5.md`
+
+It’s written so *any* instance (or human) can read it and immediately understand: **what we built, why it matters, and how it maps into the Phase I narrative.**
+
+---
+
+# XPRIZE Quantum Apps — Phase I “Phase-1.5” Build Log (Seed → Tickets 1–5)
+
+**Primary application:** satellite conjunction / collision probability estimation under uncertainty
+**Quantum hook:** quantum amplitude estimation (QAE) framing for rare-event probability estimation, inserted only in the expensive “refinement slice” (hybrid workflow)
+**Goal of this repo:** produce **reviewer-proof classical benchmarking + feasibility evidence** so our Phase I submission looks “execution-ready,” not speculative.
+
+---
+
+## 0) What we started with (“the seed” before today)
+
+We already had a functioning, reproducible **Tier-1** rare-event benchmark harness with:
+
+* **A simple analytic encounter model** (closest-approach / miss-distance event)
+* **Classical baselines**:
+
+  * Plain Monte Carlo (MC)
+  * Importance Sampling (IS)
+* **Tier calibration** to control “rarity” (Tier 2 / Tier 3 regimes)
+* **CI reporting + convergence plots**
+* **A basic bench suite** to compare methods across tiers
+
+This seed was enough to show “MC is bad in rare regimes; IS helps,” but it still looked “toy-ish” and not obviously conjunction-ops grounded. It also lacked (a) non-Gaussian uncertainty realism, (b) a second non-strawman rare-event baseline, (c) operationally recognizable encounter-plane framing, and (d) feasibility/resource estimation artifacts.
+
+---
+
+## 1) Ticket 1 — Realistic uncertainty: Gaussian mixtures + near-threshold “cliff edge” regimes
+
+**What we built**
+
+* **Two-component Gaussian mixture uncertainty** for inputs:
+
+  * Mode A: nominal tight uncertainty
+  * Mode B: small weight `w` (e.g., 0.05) with inflated covariance `k` (e.g., 10×) and optional mean shift
+    → models “small bad mode dominates tail risk” (realistic non-Gaussian behavior).
+* **Near-threshold scenarios** (mean miss distance close to the hard-body threshold `d0`)
+  → models “boundary-layer / cliff-edge” regimes where tiny shifts flip event outcomes.
+
+**Why it matters**
+
+* Makes the task **realistic**: tail risk can be dominated by small-probability “wide error” modes.
+* Makes the benchmark **hard in a realistic way**: near the decision boundary, confidence is expensive.
+
+**Key artifacts**
+
+* `results/plots/mixture_effects.png` — CI width vs N, showing mixture and near-threshold effects
+* `results/mixture_summary.md` — reviewer-safe narrative (zero-hit aware, stress-test labeled)
+* Optional diagnostics: `results/plots/is_ess_diagnostics.png`
+
+**Writing implication**
+
+* This powers the “why classical refinement is expensive” story in:
+
+  * **Problem/Impact** (uncertainty, tail risk, decision pressure)
+  * **Classical Benchmarking**
+  * **Novelty** (model realism + controlled stress regimes)
+
+---
+
+## 2) Ticket 2 — Add a second serious classical baseline: Subset Simulation / Splitting (SPLIT)
+
+**What we built**
+
+* A **subset simulation / splitting estimator** (“SPLIT”) implemented as a robust rare-event baseline.
+* Empirical confidence intervals using **replicate runs** (reviewer-proof).
+* Compute-normalized comparison:
+
+  * New plot **CI width vs compute proxy** (event predicate evals), so we don’t compare apples-to-oranges sample counts.
+
+**Why it matters**
+
+* Judges expect “best classical baselines,” not strawman MC.
+* Adding SPLIT proves we’re benchmarking against **multiple** serious rare-event methods.
+* “CI width vs compute” is the grown-up metric.
+
+**Key artifacts**
+
+* `results/tables/splitting_suite.csv`
+* `results/plots/ciwidth_vs_compute.png`
+* `results/splitting_summary.md`
+
+**Writing implication**
+
+* This anchors “Classical Benchmarking” and “Evidence Supporting Classical Benchmarking.”
+* Also strengthens “Quantum Advantage” because it shows the *true* classical bar is high—and still painful in tail regimes.
+
+---
+
+## 3) Ticket 3 — Make it conjunction-legible: Encounter-plane model (oracle-friendly)
+
+**What we built**
+A new “space-recognizable” model that maps directly to conjunction ops:
+
+* **Encounter-plane uncertainty model (2D)**: sample relative position at TCA in the encounter plane
+* Event predicate: **miss distance < d0**
+* Supports:
+
+  * single Gaussian and Gaussian mixture
+  * near-threshold stress tests
+* Runs full benchmark suite on this model:
+
+  * MC / IS / SPLIT
+* Generates both:
+
+  * CI width vs N plots
+  * CI width vs compute plots
+
+**Why it matters**
+
+* This is the clean bridge to quantum:
+
+  * The event predicate is a **natural oracle**: compute `x^2 + y^2 < d0^2` (no sqrt)
+* It looks like the real domain:
+
+  * “encounter-plane miss distance” is a conjunction-native framing
+
+**Key artifacts**
+
+* `results/tables/encounterplane_suite.csv`
+* `results/plots/encounterplane_effects.png`
+* `results/plots/encounterplane_ciwidth_vs_compute.png`
+* `results/encounterplane_summary.md`
+
+**Writing implication**
+
+* This is the core of **Problem Statement & Scope** and **Classical Benchmarking**.
+* Also defines the **Oracle** clearly for **Quantum Advantage** and **Viability** sections.
+
+---
+
+## 3.1) Ticket 3 hardening — Replicate-based CIs for MC/IS + paper-ready figures
+
+**What we built**
+
+* A replicate runner for encounter-plane MC/IS so **CI methodology matches SPLIT** (no reviewer “apples vs oranges” critique).
+* **Paper figures** (cleaner than internal plots):
+
+  * Baseline-focused figure
+  * Near-threshold stress-test figure with explicit label
+
+**Key artifacts**
+
+* `results/tables/encounterplane_replicates.csv`
+* `results/plots/encounterplane_paper_baseline.png`
+* `results/plots/encounterplane_paper_nearthreshold.png`
+* updated `results/encounterplane_summary.md` with explicit CI method + stress-test + mixture bullets
+
+**Writing implication**
+
+* These paper figures are ready to drop into the Phase I PDF with minimal cleanup.
+
+---
+
+## 4) Ticket 4A — Viability / resource estimation without external tools (parametric model)
+
+**What we built**
+A Phase I viability package that is honest, explicit, and “Phase-1.5 mature”:
+
+* `results/oracle_spec.md`
+
+  * oracle definition (squared distance compare)
+  * reversible steps (compute, compare, mark, uncompute)
+  * why squared distance avoids reversible sqrt cost
+* `scripts/generate_resource_estimate.py` produces:
+
+  * `results/tables/resource_scaling_table.csv`
+  * `results/plots/ae_vs_mc_calls.png` (AE ~ 1/ε vs MC ~ 1/ε²)
+  * `results/plots/total_toffoli_vs_eps.png` (parametric Toffoli cost vs ε)
+  * `results/crossover_note.md` (empirical + symbolic crossover framing)
+  * `results/viability_block.md` (paste-ready text)
+
+**Why it matters**
+
+* Shows we understand:
+
+  * **oracle + state prep dominate constants**
+  * QAE only helps if those constants are engineered down + we use QAE only where classical refinement cost is extreme
+
+**Writing implication**
+
+* This fills the “Viability” section and supports “Evidence Supporting Quantum Advantage.”
+
+---
+
+## 4) Ticket 4B — Viability with a named third-party estimator (Microsoft QDK)
+
+**What we built**
+A real, named **fault-tolerant resource estimator** artifact:
+
+* Script: `scripts/run_qdk_resource_estimate.py`
+* Sweeps:
+
+  * bits = {16, 24, 32}
+  * error_budget = {1e-2, 1e-3, 1e-4}
+  * models = gate-based + Majorana model (as available)
+* Outputs:
+
+  * `results/tables/qdk_resource_estimate_summary.csv`
+  * `results/plots/qdk_resource_estimate.png` (log scale)
+  * `results/qdk_resource_estimate.md` (scope + caveats + takeaways)
+
+**Why it matters**
+
+* This is a pure credibility stamp:
+
+  * “we didn’t just theorize; we ran a named estimator on an oracle skeleton”
+* We explicitly state scope:
+
+  * oracle arithmetic skeleton only, not full state prep + not full AE loop
+    → credibility through honesty.
+
+**Writing implication**
+
+* This is a strong “Evidence Supporting Viability” artifact and directly answers “near-term realism.”
+
+---
+
+## 5) Ticket 5 — Phase II plan evidence: Precision calibration + Telescoping/gating (hybrid insertion)
+
+This ticket is a *massive* maturity signal because it turns Phase II promises into **data-backed levers**.
+
+### 5A) Precision calibration (quantization sweep)
+
+**What we built**
+
+* Signed fixed-point quantization utilities and quantized event evaluation
+* Precision sweep across bits = {12,16,20,24,32} comparing Pc error vs float baseline
+* Rule: recommend smallest b such that quantization error ≤ 0.25 × estimator CI width (decision-grade)
+
+**Result**
+
+* Baseline regimes recommended **b = 12**
+* Near-threshold (stress case) recommended **b = 16** (Ticket 5.1 robustness check)
+
+**Key artifacts**
+
+* `results/tables/precision_sweep.csv`
+* `results/plots/precision_error_vs_bits.png`
+* `results/plots/precision_ciwidth_vs_bits.png`
+* `results/precision_sweep_summary.md`
+
+**Writing implication**
+
+* This directly reduces FT resources by justifying **lower precision** than naive 32-bit.
+* It turns QDK “big qubits” into a concrete Phase II lever:
+
+  * “we will calibrate precision to decision needs, then re-estimate resources.”
+
+### 5B) Telescoping / gating simulation (hybrid pipeline)
+
+**What we built**
+
+* A scenario population simulation (K=2000)
+* A cheap prescreen (coarse estimate + conservative margin)
+* Classifies scenarios into:
+
+  * SAFE / DANGER / GRAY
+* Runs refinement only for GRAY using a strong baseline method (IS)
+
+**Result (default policy run)**
+
+* SAFE ≈ 53.1%
+* DANGER ≈ 36.8%
+* GRAY ≈ 10.1%
+* Expected compute reduced ~88% vs “always refine” proxy
+
+**Key artifacts**
+
+* `results/tables/gating_simulation.csv`
+* `results/plots/gating_fraction_vs_policy.png`
+* `results/plots/gating_compute_hist.png`
+* `results/plots/gating_expected_compute.png`
+* `results/gating_summary.md`
+
+**Writing implication**
+
+* This justifies the hybrid strategy:
+
+  * “Quantum is only used in the GRAY refinement slice”
+* It supports:
+
+  * Impact (faster decisions, fewer unnecessary refinements)
+  * Viability (quantum use is sparse, not constant)
+
+### 5C) Phase II plan evidence block (copy/paste ready)
+
+* `results/phase2_plan_evidence.md`
+  This is the short, judge-legible “Phase II plan” that is backed by measurements:
+* calibrated bit precision
+* gated refinement fraction
+* how that informs oracle/state prep design + iterative estimator-backed optimization
+
+---
+
+## Where we are now (end of Friday morning)
+
+**We are done with the core coding/benchmark/viability stack.**
+What remains is *packaging and writing*:
+
+1. **Phase I Narrative PDF**
+
+   * Use the official template
+   * Insert our “paper figures” + key plots/tables
+   * Use our markdown blocks to accelerate writing:
+
+     * viability_block.md
+     * encounterplane_summary.md
+     * mixture_summary.md
+     * splitting_summary.md
+     * phase2_plan_evidence.md
+     * qdk_resource_estimate.md (selectively)
+
+2. **Submission mechanics**
+
+   * HotCRP upload + submission number
+   * POP upload + form fields + same PDF
+
+3. **Credibility packaging**
+
+   * Public Git repo + Zenodo DOI (software + report)
+   * (Optional) short “technical report” PDF on Zenodo that matches the narrative
+
+---
+
+## How this maps to the Phase I Narrative sections (A–I)
+
+**A. Problem Statement & Scope**
+
+* encounter-plane model definition + what Pc means operationally
+  (use `encounterplane_summary.md` + one figure)
+
+**B. Impact**
+
+* decision-boundary refinement cost + why false alarms / unnecessary maneuvers matter
+* gating result: only ~10% gray slice needs heavy refinement
+  (use `gating_summary.md` + `gating_expected_compute.png`)
+
+**C. Quantum Advantage**
+
+* show structure: estimating a probability/expectation under uncertainty
+* AE scaling vs MC scaling plot: `ae_vs_mc_calls.png`
+* emphasize hybrid insertion: quantum only for GRAY slice (telescoping)
+
+**D. Classical Benchmarking**
+
+* show MC vs IS vs SPLIT across regimes (baseline, mixture, near-threshold)
+* include compute-normalized plot(s)
+* cite replicate-based CI methodology
+
+**E. Viability**
+
+* oracle_spec.md (squared norm compare, reversible steps)
+* resource_scaling_table.csv + total_toffoli_vs_eps plot
+* QDK estimator sweep artifact (named tool, honest caveats)
+* precision calibration: “b=12 baseline, b=16 near-threshold”
+
+**F. Novelty**
+
+* not claiming “Pc is novel”
+* novelty is: hybrid refinement slice + oracle feasibility framing + measured levers (precision/gating) + rigorous baselines + estimator-backed iteration plan
+
+**G/H. Evidence Supporting Quantum Advantage / Classical Benchmarking**
+
+* reference the plots/tables as evidence and cite estimator tool output
+
+**I. References**
+
+* XPRIZE docs + QDK docs + rare-event method refs (subset sim) + conjunction risk threshold refs (as needed)
+
+---
+
+## TL;DR (for any reader)
+
+We built an **execution-ready** Phase I package:
+
+* A conjunction-legible encounter-plane probability estimation model
+* Three classical baselines (MC/IS/SPLIT) with replicate CIs and compute-normalized comparisons
+* Realistic uncertainty stressors (mixtures + decision-boundary near-threshold)
+* A serious viability story: oracle decomposition + parametric scaling + named QDK resource estimates
+* Phase II levers backed by evidence:
+
+  * precision calibration (b=12 baseline, b=16 near-threshold)
+  * telescoping/gating (only ~10% cases need expensive refinement, ~88% compute reduction)
+
+This supports a Phase I submission that looks like **“ready for technical evaluation”** rather than exploratory.
+
+---

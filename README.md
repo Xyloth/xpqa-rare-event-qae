@@ -103,3 +103,10 @@ python scripts/run_precision_sweep.py && python scripts/plot_precision_sweep.py
 - Software/archive DOI: `10.5281/zenodo.18816743`
 - Technical report PDF: `paper/technical_report_v0.1.pdf`
 - Release tag: `v0.1.0`
+
+## License
+
+Source code is released under the MIT License. Research narrative, figures,
+reports, and generated result artifacts are included for
+competition/reproducibility context; cite the Zenodo records above when
+referencing the submission.
